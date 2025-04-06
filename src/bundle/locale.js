@@ -94,7 +94,7 @@ export class EjsLocale {
     }
     async save() {
         const { target } = this.options
-        await arrayAsync(this.data, ([lang, data]) => {
+        await arrayAsync(Object.entries(this.data), ([lang, data]) => {
             const file = resolve(target, [lang, 'json'].join('.'))
             console.log('✅', 'save file:', file)
             return jsonFileSave(file, data, null, 2)
