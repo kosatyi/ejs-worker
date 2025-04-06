@@ -44,13 +44,13 @@ helpers({
         return this.url(path, query)
     },
     ln() {
-        let { locale } = this
+        let currentLang = this.get('lang')
         let args = Array.from(arguments).map((i) => i)
         let path = Array.from(arguments)
         let lang = args.shift()
         let query = args.pop()
         if (query && typeof query === 'string') query = {}
-        if (i18n.has(lang) === false) path.unshift(locale)
+        if (i18n.has(lang) === false) path.unshift(currentLang)
         return this.url(path, query)
     },
 })
