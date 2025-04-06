@@ -1,4 +1,5 @@
 import { resolve } from 'node:path'
+import { glob } from 'glob'
 import {
     arrayAsync,
     fileContent,
@@ -6,8 +7,6 @@ import {
     fileWatcher,
     parseJSON,
 } from './utils.js'
-
-import { glob } from 'glob'
 
 export class EjsLocale {
     constructor(options = {}) {
