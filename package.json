@@ -1,0 +1,30 @@
+{
+  "name": "@kosatyi/ejs-worker",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "worker.js",
+  "module": "worker.js",
+  "files": [
+    "worker.js",
+    "bundle.js",
+    "bin",
+    "src"
+  ],
+  "scripts": {
+    "build": "node build.js",
+    "prepublishOnly": "npm i",
+    "postversion": "git push && git push --tags"
+  },
+  "dependencies": {
+    "@kosatyi/ejs": "0.0.93",
+    "ejs-component": "^0.0.22",
+    "front-matter": "^4.0.2",
+    "glob": "^11.0.1",
+    "glob-watcher": "^6.0.0",
+    "marked": "^15.0.7",
+    "process.argv": "^1.0.0",
+    "rollup-plugin-copy": "^3.5.0",
+    "yaml": "^2.7.1"
+  }
+}
