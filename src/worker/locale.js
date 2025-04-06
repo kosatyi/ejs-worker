@@ -13,7 +13,7 @@ export const i18n = (prop, params) => {
     if (typeof prop !== 'string') return
     const data = i18nData[i18nInstance.current] || {}
     const value = data[prop] || prop
-    return value.replace(/{(\d+)}/g, (m, n) =>
+    return value.replace(/{([^}]+)}/g, (m, n) =>
         typeof params[n] !== undefined ? params[n] : n,
     )
 }

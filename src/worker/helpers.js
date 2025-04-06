@@ -1,16 +1,32 @@
 import { helpers, version } from '@kosatyi/ejs/worker'
 import { i18n } from './locale.js'
-console.log('ejs-worker', version)
+
+const trimTrailingSlash = (path) => {
+    if (path.at(-1) === '/') {
+        path = path.substring(0, path.length - 1)
+    }
+    return path
+}
+
+const appendTrailingSlash = (path) => {
+    if (path.at(-1) !== '/') {
+        path.split('/').at(-1).split('.')
+    }
+}
+
 /**
  * @namespace EJS
  */
 helpers({
+    trailingSlash(path) {
+        return path
+    },
     url(path, query) {
         const url = new URL(this.get('origin'))
         if (Array.isArray(path)) {
             path = path.filter((i) => i).join('/')
         }
-        url.pathname = path
+        url.pathname = this.trailingSlash(path)
         Object.entries(query || {}).forEach(([key, value]) => {
             url.searchParams.set(key, String(value))
         })
