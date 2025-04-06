@@ -15,7 +15,7 @@ const appendTrailingSlash = (path) => {
 }
 
 const splitPath = (path) =>
-    (Array.isArray(path) ? path : path.split('/')).map((i) => i)
+    (Array.isArray(path) ? path : (path || '').split('/')).map((i) => i)
 
 /**
  * @namespace EJS
