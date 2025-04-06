@@ -14,6 +14,9 @@ const appendTrailingSlash = (path) => {
     }
 }
 
+const splitPath = (path) =>
+    (Array.isArray(path) ? path : path.split('/')).map((i) => i)
+
 /**
  * @namespace EJS
  */
@@ -23,34 +26,19 @@ helpers({
     },
     url(path, query) {
         const url = new URL(this.get('origin'))
-        if (Array.isArray(path)) {
-            path = path.filter((i) => i).join('/')
-        }
+        path = splitPath(path).join('/')
         url.pathname = this.trailingSlash(path)
         Object.entries(query || {}).forEach(([key, value]) => {
             url.searchParams.set(key, String(value))
         })
         return url.toString()
     },
-    assets() {
-        let query = {}
-        let path = Array.from(arguments)
-        let nocache = path.pop()
-        if (nocache === true) {
-            query.v = version
-        } else {
-            path.push(nocache)
-        }
-        return this.url(path, query)
+    assets(path, nocache) {
+        return this.url(splitPath(path), nocache ? { v: version } : {})
     },
-    ln() {
-        let currentLang = this.get('lang')
-        let args = Array.from(arguments).map((i) => i)
-        let path = Array.from(arguments)
-        let lang = args.shift()
-        let query = args.pop()
-        if (query && typeof query === 'string') query = {}
-        if (i18n.has(lang) === false) path.unshift(currentLang)
+    ln(path, query) {
+        path = splitPath(path)
+        if (i18n.has(path.at(0)) === false) path.unshift(this.get('lang'))
         return this.url(path, query)
     },
 })
