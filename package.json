@@ -5,6 +5,9 @@
   "type": "module",
   "main": "worker.js",
   "module": "worker.js",
+  "bin": {
+    "ejs-worker": "bin/worker.js"
+  },
   "files": [
     "worker.js",
     "bundle.js",
