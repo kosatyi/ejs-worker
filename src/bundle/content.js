@@ -114,10 +114,9 @@ export class EjsContent {
     }
 
     async files() {
-        const pattern = `**/*.{${this.options.fileTypes.join(',')}}`
-        const files = await glob(pattern, {
-            cwd: this.options.source,
-        })
+        const { source: cwd, fileTypes } = this.options
+        const pattern = `**/*.{${fileTypes.join(',')}}`
+        const files = await glob(pattern, { cwd })
         return Array.from(files)
     }
 
@@ -131,8 +130,9 @@ export class EjsContent {
     }
 
     async saveData(name, list) {
+        const { target } = this.options
         await jsonFileSave(
-            [this.options.output, [name, 'json'].join('.')].join('/'),
+            [target, 'api', [name, 'json'].join('.')].join('/'),
             list.map(({ name, path, data }) => ({ name, path, data })),
         )
     }
@@ -176,7 +176,7 @@ export class EjsContent {
             let { data, content, buffer } = await this.content(filepath)
             if (data === null) continue
             dataCallback(Object.assign(data, params))
-            let path = this.format(output, data)
+            let path = join('data', this.format(output, data))
             content = contentCallback(content)
             const entry = { name, path, data, content }
             if (index) {
