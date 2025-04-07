@@ -1,14 +1,12 @@
 import { helpers } from '@kosatyi/ejs/worker'
-
 const i18nData = {
     en: {},
 }
 const i18nInstance = {
     default: 'en',
+    current: 'en',
 }
-
 const isPlainObject = (value) => value?.constructor === Object
-
 export const i18n = (prop, params) => {
     if (typeof prop !== 'string') return
     const data = i18nData[i18nInstance.current] || {}
@@ -17,19 +15,15 @@ export const i18n = (prop, params) => {
         typeof params[n] !== undefined ? params[n] : n,
     )
 }
-
 i18n.has = (lang) => {
     return i18nData.hasOwnProperty(lang)
 }
-
 i18n.lang = (lang) => {
     i18nInstance.current = lang
 }
-
 i18n.keys = () => {
     return Object.keys(i18nData)
 }
-
 i18n.add = (lang, data) => {
     if (i18nData.hasOwnProperty(lang) === false) {
         i18nData[lang] = {}
