@@ -138,8 +138,8 @@ export const api = (() => {
     }
 
     return {
-        setProps({ path, data, context }) {
-            Object.assign(props, { path, data, context })
+        setProps(extend) {
+            Object.assign(props, extend)
             return this
         },
         async getContent({ path }) {
