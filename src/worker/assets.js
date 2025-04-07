@@ -169,10 +169,21 @@ export const api = (() => {
  */
 helpers({ api })
 
-export const setDataApi = ({ path, data = [] }) => {
+export const setApi = ({ path, data = [] }) => {
     return async (context, next) => {
         api.setProps({ context, data, path })
         context.api = api
+        await next()
+    }
+}
+
+export const setData = (props = {}) => {
+    return async (context, next) => {
+        if (context.data) {
+            Object.entries(props).forEach(([key, value]) => {
+                context.data.set(key, value)
+            })
+        }
         await next()
     }
 }
