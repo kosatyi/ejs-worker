@@ -188,7 +188,7 @@ export class EjsContent {
             } else {
                 await jsonFileSave(join(target, path), entry)
             }
-            logger.progress('parse file:', path)
+            logger.progress('save file:', path)
         }
         if (index) {
             await this.saveData(name, Array.from(collection.values()))
