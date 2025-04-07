@@ -128,22 +128,28 @@ export const api = (() => {
             .filter((filter) => filter)
             .reduce((a, c) => a.filter(c), props.data)
     }
-    const fetchContent = (path) => {
-        const {
-            req: { url },
-            env: { [props.name]: assets },
-        } = props.context
-        return assets
-            .fetch(new URL(props.path.concat(path), url))
-            .then((res) => res.json())
+
+    const getPath = (...path) => {
+        return path
+            .map((i) => (i ? i.split('/') : null))
+            .flat()
+            .filter((i) => i)
+            .join('/')
     }
+
     return {
-        setProps({ data, context }) {
-            Object.assign(props, { data, context })
+        setProps({ path, data, context }) {
+            Object.assign(props, { path, data, context })
             return this
         },
         async getContent({ path }) {
-            return fetchContent(path)
+            const {
+                req: { url },
+                env: { [props.name]: assets },
+            } = props.context
+            return assets
+                .fetch(URL.parse(getPath(props.path, path), url))
+                .then((res) => res.json())
         },
         findOne({ query = [], sort = [] }) {
             return getCursor(query).at(0)
@@ -170,8 +176,9 @@ export const api = (() => {
 helpers({ api })
 
 export const setApi = ({ path, data = [] }) => {
+    api.setProps({ data, path })
     return async (context, next) => {
-        api.setProps({ context, data, path })
+        api.setProps({ context })
         context.api = api
         await next()
     }

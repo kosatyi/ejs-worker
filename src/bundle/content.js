@@ -1,5 +1,5 @@
 import { glob } from 'glob'
-import { extname, resolve } from 'node:path'
+import { extname, resolve, join } from 'node:path'
 import {
     logger,
     fileSave,
@@ -184,9 +184,9 @@ export class EjsContent {
                 collection.set(filename, entry)
             }
             if (buffer) {
-                await fileSave(resolve(target, path), content)
+                await fileSave(join(target, path), content)
             } else {
-                await jsonFileSave(resolve(target, path), entry)
+                await jsonFileSave(join(target, path), entry)
             }
             logger.progress('parse file:', path)
         }
