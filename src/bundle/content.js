@@ -176,7 +176,7 @@ export class EjsContent {
             let { data, content, buffer } = await this.content(filepath)
             if (data === null) continue
             dataCallback(Object.assign(data, params))
-            let path = join('data', this.format(output, data))
+            let path = this.format(output, data)
             content = contentCallback(content)
             const entry = { name, path, data, content }
             if (index) {
