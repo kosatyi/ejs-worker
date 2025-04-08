@@ -147,7 +147,9 @@ export const api = (() => {
                 req: { url },
                 env: { [props.name]: assets },
             } = props.context
-            return assets.fetch(URL.parse(path, url)).then((res) => res.json())
+            const file = URL.parse(url)
+            file.pathname = path
+            return assets.fetch(file).then((res) => res.json())
         },
         findOne({ query = [], sort = [] }) {
             return getCursor(query).at(0)
