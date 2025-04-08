@@ -138,7 +138,7 @@ export const api = (() => {
     }
 
     return {
-        setProps(extend) {
+        setProps(extend = {}) {
             Object.assign(props, extend)
             return this
         },
@@ -147,9 +147,7 @@ export const api = (() => {
                 req: { url },
                 env: { [props.name]: assets },
             } = props.context
-            return assets
-                .fetch(URL.parse(getPath(props.path, path), url))
-                .then((res) => res.json())
+            return assets.fetch(URL.parse(path, url)).then((res) => res.json())
         },
         findOne({ query = [], sort = [] }) {
             return getCursor(query).at(0)
