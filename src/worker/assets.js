@@ -93,8 +93,12 @@ const getPages = (total, current, limit) => {
     let index = Math.max(1, current - 1)
     let start = current === 1 ? 0 : index * limit
     let end = start + limit
+    let previous = current > 1 ? current - 1 : null
+    let next = current < count ? current + 1 : null
     return {
         current,
+        previous,
+        next,
         count,
         start,
         end,
