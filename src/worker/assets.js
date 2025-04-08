@@ -4,6 +4,9 @@ const filters = {
     $eq(name, value) {
         return (item) => getPath(item, name, '') === value
     },
+    $ne(name, value) {
+        return (item) => getPath(item, name, '') !== value
+    },
     $startWith(name, value) {
         return (item) => getPath(item, name, '').startsWith(value)
     },
