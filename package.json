@@ -20,7 +20,7 @@
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
-    "@kosatyi/ejs": "^0.0.94",
+    "@kosatyi/ejs": "^0.0.95",
     "ejs-component": "^0.0.22",
     "front-matter": "^4.0.2",
     "glob": "^11.0.1",
