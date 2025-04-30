@@ -23,6 +23,14 @@ export class EjsLocale {
             options,
         )
     }
+    sort(data) {
+        return Object.keys(data)
+            .sort()
+            .reduce((obj, key) => {
+                obj[key] = data[key]
+                return obj
+            }, {})
+    }
     reduce(callback) {
         Object.entries(this.data).reduce((data, [lang, value]) => {
             data[lang] = callback(lang, value, data)
@@ -62,23 +70,15 @@ export class EjsLocale {
     async watch() {
         const watchers = []
         watchers.push(
-            fileWatcher(
-                this.options.target,
-                async () => {
-                    await this.setup()
-                },
-                250,
-            ),
+            fileWatcher(this.options.target, async () => {
+                await this.setup()
+            }),
         )
         watchers.push(
-            fileWatcher(
-                this.options.source,
-                async (filename) => {
-                    await this.process(filename)
-                    await this.save()
-                },
-                250,
-            ),
+            fileWatcher(this.options.source, async (filename) => {
+                await this.process(filename)
+                await this.save()
+            }),
         )
         await Promise.all(watchers)
     }
@@ -99,7 +99,7 @@ export class EjsLocale {
         await arrayAsync(Object.entries(this.data), ([lang, data]) => {
             const file = resolve(target, [lang, 'json'].join('.'))
             console.log('✅', 'save file:', file)
-            return jsonFileSave(file, data, null, 2)
+            return jsonFileSave(file, this.sort(data), null, 2)
         })
     }
 }

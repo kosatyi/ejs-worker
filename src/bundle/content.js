@@ -95,17 +95,13 @@ export class EjsContent {
     }
 
     async watch() {
-        await fileWatcher(
-            this.options.source,
-            async (filename) => {
-                const config = this.config(filename)
-                if (config) {
-                    await this.parse([filename], config)
-                    await this.saveIndex()
-                }
-            },
-            250,
-        )
+        await fileWatcher(this.options.source, async (filename) => {
+            const config = this.config(filename)
+            if (config) {
+                await this.parse([filename], config)
+                await this.saveIndex()
+            }
+        })
     }
 
     async pipeline() {
