@@ -40,7 +40,9 @@ export class EjsLocale {
         for (const lang of output) {
             const path = resolve(target, [lang, 'json'].join('.'))
             const content = await fileContent(path)
-            this.data[lang] = parseJSON(content, {})
+            const data = parseJSON(content, {})
+            this.data[lang] = this.data[lang] || {}
+            Object.assign(this.data[lang], data)
         }
     }
     async build() {
