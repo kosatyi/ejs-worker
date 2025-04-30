@@ -1,12 +1,15 @@
 import { helpers } from '@kosatyi/ejs/worker'
+import { isPlainObject } from './utils.js'
+
 const i18nData = {
     en: {},
 }
+
 const i18nInstance = {
     default: 'en',
     current: 'en',
 }
-const isPlainObject = (value) => value?.constructor === Object
+
 export const i18n = (prop, params) => {
     if (typeof prop !== 'string') return
     const data = i18nData[i18nInstance.current] || {}

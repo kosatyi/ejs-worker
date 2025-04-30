@@ -181,7 +181,12 @@ export const api = (() => {
  * @namespace EJS
  */
 helpers({ api })
-
+/**
+ *
+ * @param path
+ * @param data
+ * @return {(function(*, *): Promise<void>)|*}
+ */
 export const setApi = ({ path, data = [] }) => {
     api.setProps({ data, path })
     return async (context, next) => {
@@ -190,7 +195,11 @@ export const setApi = ({ path, data = [] }) => {
         await next()
     }
 }
-
+/**
+ *
+ * @param props
+ * @return {(function(*, *): Promise<void>)|*}
+ */
 export const setData = (props = {}) => {
     return async (context, next) => {
         if (context.data) {
