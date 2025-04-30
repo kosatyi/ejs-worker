@@ -42,7 +42,7 @@ export class EjsLocale {
             const content = await fileContent(path)
             const data = parseJSON(content, {})
             this.data[lang] = this.data[lang] || {}
-            Object.assign(this.data[lang], data)
+            Object.assign(this.data[lang], data || {})
         }
     }
     async build() {
