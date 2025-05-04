@@ -17,6 +17,11 @@ export const i18n = (prop, params) => {
         typeof params[n] !== undefined ? params[n] : n,
     )
 }
+/**
+ *
+ * @param lang
+ * @return {boolean}
+ */
 i18n.has = (lang) => {
     return i18nData.hasOwnProperty(lang)
 }
@@ -49,7 +54,7 @@ i18n.init = (list = []) => {
     })
 }
 
-export const i18nMiddleware = () => {
+i18n.use = () => {
     return async (context, next) => {
         context.i18n = i18n
         await next()
