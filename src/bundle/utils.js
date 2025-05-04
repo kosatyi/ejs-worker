@@ -4,6 +4,22 @@ import { Marked } from 'marked'
 import fm from 'front-matter'
 import yaml from 'yaml'
 
+/**
+ * @typedef {function} FileContentBuffer
+ * @param {string} path
+ * @return {Promise<Buffer<ArrayBufferLike>>}
+ */
+
+/**
+ * @typedef {function} FileContentString
+ * @param path
+ * @param {true} stringify
+ * @return {Promise<string>}
+ */
+
+/**
+ * @type {FileContentString | FileContentBuffer}
+ */
 export const fileContent = (path, stringify = true) => {
     return readFile(path)
         .then((buffer) => (stringify ? buffer.toString() : buffer))
@@ -61,7 +77,7 @@ export const parseMarkdown = async (filepath) => {
 
 export const parseYaml = async (filepath) => {
     const data = await getFileData(filepath)
-    const file = await fileContent(filepath)
+    const file = await fileContent(filepath, true)
     const params = yaml.parse(file)
     Object.assign(data, params)
     return { data }

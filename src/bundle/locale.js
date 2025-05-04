@@ -1,11 +1,12 @@
 import { resolve } from 'node:path'
 import { glob } from 'glob'
+import yaml from 'yaml'
 import {
     arrayAsync,
     fileContent,
     jsonFileSave,
     fileWatcher,
-    parseJSON,
+    fileSave,
 } from './utils.js'
 
 export class EjsLocale {
@@ -46,9 +47,9 @@ export class EjsLocale {
     async setup() {
         const { target, output } = this.options
         for (const lang of output) {
-            const path = resolve(target, [lang, 'json'].join('.'))
-            const content = await fileContent(path)
-            const data = parseJSON(content, {})
+            const path = resolve(target, [lang, 'yml'].join('.'))
+            const content = await fileContent(path, true)
+            const data = yaml.parse(content)
             this.data[lang] = this.data[lang] || {}
             Object.assign(this.data[lang], data || {})
         }
@@ -97,7 +98,8 @@ export class EjsLocale {
     async save() {
         const { target } = this.options
         await arrayAsync(Object.entries(this.data), ([lang, data]) => {
-            const file = resolve(target, [lang, 'json'].join('.'))
+            const file = resolve(target, [lang, 'yml'].join('.'))
+            fileSave(file, this.sort(yaml.stringify(data)))
             console.log('✅', 'save file:', file)
             return jsonFileSave(file, this.sort(data), null, 2)
         })
