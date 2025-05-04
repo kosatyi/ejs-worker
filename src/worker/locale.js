@@ -7,7 +7,7 @@ const i18nInstance = { default: 'en', current: 'en' }
  *
  * @param prop
  * @param params
- * @return {string}
+ * @return {string|undefined}
  */
 export const i18n = (prop, params) => {
     if (typeof prop !== 'string') return
