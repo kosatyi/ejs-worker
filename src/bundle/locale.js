@@ -1,13 +1,7 @@
 import { resolve } from 'node:path'
 import { glob } from 'glob'
 import yaml from 'yaml'
-import {
-    arrayAsync,
-    fileContent,
-    jsonFileSave,
-    fileWatcher,
-    fileSave,
-} from './utils.js'
+import { arrayAsync, fileContent, fileWatcher, fileSave } from './utils.js'
 
 export class EjsLocale {
     constructor(options = {}) {
@@ -50,7 +44,6 @@ export class EjsLocale {
             const path = resolve(target, [lang, 'yml'].join('.'))
             const content = await fileContent(path, true)
             const data = yaml.parse(content)
-            this.data[lang] = this.data[lang] || {}
             Object.assign(this.data[lang], data || {})
         }
     }
