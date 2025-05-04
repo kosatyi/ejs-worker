@@ -165,6 +165,8 @@ export class EjsContent {
             index = true,
         },
     ) {
+        const collection = this.data.get(name) || new Map()
+        this.data.set(name, collection)
         for (const filename of files) {
             let filepath = resolve(source, filename)
             let params = this.params(regexp, filename)
@@ -178,7 +180,7 @@ export class EjsContent {
             if (index) {
                 this.site.set(filepath, entry)
             }
-            this.data.set(filename, entry)
+            collection.set(filename, entry)
             if (buffer) {
                 await fileSave(join(target, path), content)
             } else {
@@ -186,7 +188,7 @@ export class EjsContent {
             }
             logger.progress('save file:', path)
         }
-        await this.saveData(name, Array.from(this.data.values()))
+        await this.saveData(name, Array.from(collection.values()))
         logger.progress(null)
     }
 }
