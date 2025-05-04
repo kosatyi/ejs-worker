@@ -99,7 +99,7 @@ export class EjsLocale {
         const { target } = this.options
         await arrayAsync(Object.entries(this.data), ([lang, data]) => {
             const file = resolve(target, [lang, 'yml'].join('.'))
-            fileSave(file, this.sort(yaml.stringify(data)))
+            fileSave(file, yaml.stringify(this.sort(data)))
             console.log('✅', 'save file:', file)
             return jsonFileSave(file, this.sort(data), null, 2)
         })
