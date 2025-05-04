@@ -44,6 +44,7 @@ export class EjsLocale {
             const path = resolve(target, [lang, 'yml'].join('.'))
             const content = await fileContent(path, true)
             const data = yaml.parse(content)
+            this.data[lang] = {}
             Object.assign(this.data[lang], data || {})
         }
     }
