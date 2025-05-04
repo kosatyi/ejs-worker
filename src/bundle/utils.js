@@ -78,8 +78,8 @@ export const parseMarkdown = async (filepath) => {
 export const parseYaml = async (filepath) => {
     const data = await getFileData(filepath)
     const file = await fileContent(filepath, true)
-    const params = yaml.parse(file)
-    Object.assign(data, params)
+    const content = yaml.parse(file)
+    Object.assign(data, { content })
     return { data }
 }
 
