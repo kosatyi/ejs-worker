@@ -39,6 +39,7 @@ i18n.add = (lang, data) => {
     }
     return i18n
 }
+
 i18n.init = (list = []) => {
     if (Array.isArray(list) === false) return
     list.forEach(({ name, data: { lang, content } = {} }) => {
