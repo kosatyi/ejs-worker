@@ -1,15 +1,14 @@
-import { helpers } from '@kosatyi/ejs/worker'
 import { isPlainObject } from './utils.js'
-
-const i18nData = {
-    en: {},
-}
-
-const i18nInstance = {
-    default: 'en',
-    current: 'en',
-}
-
+//
+const collection = 'i18n'
+const i18nData = { en: {} }
+const i18nInstance = { default: 'en', current: 'en' }
+/**
+ *
+ * @param prop
+ * @param params
+ * @return {string}
+ */
 export const i18n = (prop, params) => {
     if (typeof prop !== 'string') return
     const data = i18nData[i18nInstance.current] || {}
@@ -40,18 +39,16 @@ i18n.add = (lang, data) => {
     }
     return i18n
 }
-/**
- * @namespace EJS
- */
-helpers({ i18n })
-/**
- * @param {Object<string,any>} options
- * @return {(function(c:Context, next): Promise<any>)|*}
- */
-export const setLocale = ({ data = {} } = {}) => {
-    Object.entries(data).forEach(([key, value]) => {
-        i18n.add(key, value)
+i18n.init = (list = []) => {
+    if (Array.isArray(list) === false) return
+    list.forEach(({ name, data: { lang, content } = {} }) => {
+        if (name === collection) {
+            i18n.add(lang, content)
+        }
     })
+}
+
+export const i18nMiddleware = () => {
     return async (context, next) => {
         context.i18n = i18n
         await next()
