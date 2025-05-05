@@ -1,5 +1,5 @@
 import * as marked from 'marked'
-import { helpers, version } from '@kosatyi/ejs/worker'
+import { helpers } from '@kosatyi/ejs/worker'
 import { i18n } from './locale.js'
 import { splitPath } from './utils.js'
 
@@ -23,7 +23,10 @@ helpers({
         return url.toString()
     },
     assets(path, nocache) {
-        return this.url(splitPath(path), nocache ? { v: version } : {})
+        return this.url(
+            splitPath(path),
+            nocache ? { v: this.get('version') } : {},
+        )
     },
     ln(path, query) {
         const lang = this.get('lang')

@@ -1,5 +1,5 @@
 import { element } from '@kosatyi/ejs/element'
-import { helpers, version } from '@kosatyi/ejs/worker'
+import { helpers } from '@kosatyi/ejs/worker'
 import { configureComponent, getComponent, Component } from 'ejs-component'
 
 configureComponent({
@@ -7,19 +7,6 @@ configureComponent({
         return element(tag, attrs, content)
     },
 })
-
-Component.extend(
-    {
-        getVersion() {
-            return version
-        },
-    },
-    {
-        writable: false,
-        configurable: false,
-        enumerable: false,
-    },
-)
 
 /**
  * @namespace EJS
