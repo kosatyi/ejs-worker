@@ -1,6 +1,6 @@
 import { element } from '@kosatyi/ejs/element'
 import { helpers } from '@kosatyi/ejs/worker'
-import { configureComponent, getComponent, Component } from 'ejs-component'
+import { configureComponent, getComponent } from 'ejs-component'
 
 configureComponent({
     tagNodeToString({ tag, attrs, content }) {
