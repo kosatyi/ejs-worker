@@ -176,8 +176,6 @@ export class EjsContent {
             let filepath = resolve(source, filename)
             let params = this.params(regexp, filename)
             if (params === null) {
-                this.site.delete(filepath)
-                collection.delete(filepath)
                 continue
             }
             let { data, content, buffer } = await this.content(filepath)
