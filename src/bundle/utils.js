@@ -75,7 +75,10 @@ marked.use({
                 return false
             },
             renderer({ text, color }) {
-                return `<mark style="--t:${contrast(color)};--c:${color};"><code>${text}</code></mark>`
+                if (color) {
+                    return `<mark style="--t:${contrast(color)};--c:${color};"><code>${text}</code></mark>`
+                }
+                return `<span><code>${text}</code></span>`
             },
         },
     ],
