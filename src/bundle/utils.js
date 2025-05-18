@@ -67,10 +67,15 @@ marked.use({
             name: 'codespan',
             level: 'inline',
             tokenizer(str) {
-                const match = str.match(/^`(#[0-9A-F]{6})`/)
+                const match = str.match(/^`(#[0-9A-F]{6})`/i)
                 if (match) {
                     const [raw, text] = match
-                    return { type: 'codespan', raw, text, color: text }
+                    return {
+                        type: 'codespan',
+                        raw,
+                        text,
+                        color: text.toUpperCase(),
+                    }
                 }
                 return false
             },
