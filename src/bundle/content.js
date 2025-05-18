@@ -1,5 +1,5 @@
 import { glob } from 'glob'
-import { extname, resolve, join } from 'node:path'
+import { extname, resolve, join, relative } from 'node:path'
 import {
     logger,
     fileSave,
@@ -8,9 +8,9 @@ import {
     parseMarkdown,
     parseYaml,
     parseBuffer,
-    fileWatcher,
     arrayAsync,
 } from './utils.js'
+import globWatcher from 'glob-watcher'
 
 export class EjsContent {
     constructor(options = {}) {
@@ -96,13 +96,17 @@ export class EjsContent {
     }
 
     async watch() {
-        await fileWatcher(this.options.source, async (filename) => {
-            const config = this.config(filename)
+        const sourceWatcher = globWatcher(this.options.source)
+        const sourceChange = async (path) => {
+            path = relative(this.options.source, path)
+            const config = this.config(path)
             if (config) {
-                await this.parse([filename], config)
+                await this.parse([path], config)
                 await this.saveIndex()
             }
-        })
+        }
+        sourceWatcher.on('change', sourceChange)
+        sourceWatcher.on('add', sourceChange)
     }
 
     async pipeline() {

@@ -15,11 +15,11 @@
     "src"
   ],
   "scripts": {
-    "build": "node build.js",
     "prepublishOnly": "npm i",
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
+    "@kosatyi/ejs": "^0.0.100",
     "front-matter": "^4.0.2",
     "glob": "^11.0.1",
     "glob-watcher": "^6.0.0",

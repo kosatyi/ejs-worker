@@ -1,5 +1,12 @@
 import { helpers } from '@kosatyi/ejs/worker'
 
+const isPlainObject = (v) => v && v.constructor === Object
+const isRegexp = (v) => v && v.constructor === RegExp
+const isArray = (v) => Array.isArray(v)
+const hasOwn = (o, v) => Object.hasOwn(o, v)
+const isFunction = (v) => typeof v === 'function'
+const firstPropKey = (o) => Object.keys(o)[0]
+
 const filters = {
     $eq(name, value) {
         return (item) => getPath(item, name, '') === value
@@ -47,13 +54,6 @@ const operators = {
     },
 }
 
-const isPlainObject = (v) => v && v.constructor === Object
-const isRegexp = (v) => v && v.constructor === RegExp
-const isArray = (v) => Array.isArray(v)
-const hasOwn = (o, v) => Object.hasOwn(o, v)
-const isFunction = (v) => typeof v === 'function'
-const firstPropKey = (o) => Object.keys(o)[0]
-
 const getFilterType = (params) => {
     let key = '$eq'
     let value = params
@@ -78,7 +78,7 @@ const getFilter = (name, params) => {
     throw new Error(`Filter operator "${key}" is not a function`)
 }
 
-export const getPath = (context, name, defaults) => {
+const getPath = (context, name, defaults) => {
     let data = context || {}
     let chunks = String(name).split('.')
     let prop = chunks.pop()
@@ -87,25 +87,6 @@ export const getPath = (context, name, defaults) => {
         return d[p]
     }, data)
     return Object.hasOwn(data, prop) ? data[prop] : defaults
-}
-
-const getPages = (total, current, limit) => {
-    current = Number(current) || 1
-    limit = Number(limit) || 1e2
-    let count = Math.ceil(total / limit)
-    let index = Math.max(1, current - 1)
-    let start = current === 1 ? 0 : index * limit
-    let end = start + limit
-    let previous = current > 1 ? current - 1 : null
-    let next = current < count ? current + 1 : null
-    return {
-        current,
-        previous,
-        next,
-        count,
-        start,
-        end,
-    }
 }
 
 const getSort = (list) => {
@@ -122,65 +103,96 @@ const getSort = (list) => {
     }
 }
 
-export const api = (() => {
-    const props = {
+const getPages = (total, current, limit) => {
+    current = Number(current) || 1
+    limit = Number(limit) || 1e3
+    let count = Math.ceil(total / limit)
+    let index = Math.max(1, current - 1)
+    let start = current === 1 ? 0 : index * limit
+    let end = start + limit
+    let previous = current > 1 ? current - 1 : null
+    let next = current < count ? current + 1 : null
+    return {
+        current,
+        previous,
+        next,
+        count,
+        start,
+        end,
+    }
+}
+
+export class Api {
+    #defaultProps = {
         name: 'assets',
         path: '/data/',
         context: {},
         data: [],
+        index: {},
     }
-    const getCursor = (query) => {
+    #props = {}
+    constructor() {
+        this.#props = Object.assign({}, this.#defaultProps)
+    }
+    #cursor(query = [], index) {
+        const data = this.#props.index[index] ?? this.#props.data
         return query
             .map(([name, value]) => getFilter(name, value))
             .filter((filter) => filter)
-            .reduce((a, c) => a.filter(c), props.data)
+            .reduce((a, c) => a.filter(c), data)
     }
+    props(extend = {}) {
+        Object.assign(this.#props, extend)
+        return this
+    }
+    index(name, query) {
+        this.#props.index[name] = this.#cursor(query)
+        return this
+    }
+    async getContent({ path }) {
+        const {
+            req: { url },
+            env: { [this.#props.name]: assets },
+        } = this.#props.context
+        const file = URL.parse(url)
+        file.pathname = path
+        return assets.fetch(file).then((res) => res.json())
+    }
+    findOne({ query = [], sort = [], index = undefined }) {
+        return this.#cursor(query, index).sort(getSort(sort)).at(0)
+    }
+    /**
+     *
+     * @param {any[]} query
+     * @param {any[]} sort
+     * @param {string|number} page
+     * @param {string|number} limit
+     * @param {string} [index]
+     * @returns {{total: number, count: number, pages: Omit<{current: number | number, previous: number, next: *, count: number, start: (number|number), end: *}, "start"|"end">, list: (*)[]}}
+     */
+    find({ query = [], sort = [], page = 1, limit = 1e3, index = undefined }) {
+        const cursor = this.#cursor(query, index)
+        const total = cursor.length
+        const { start, end, ...pages } = getPages(total, page, limit)
+        const list = cursor.sort(getSort(sort)).slice(start, end)
+        const count = list.length
+        return {
+            total,
+            count,
+            pages,
+            list,
+        }
+    }
+}
 
-    const getPath = (...path) => {
-        return path
-            .map((i) => (i ? i.split('/') : null))
-            .flat()
-            .filter((i) => i)
-            .join('/')
-    }
-
-    return {
-        setProps(extend = {}) {
-            Object.assign(props, extend)
-            return this
-        },
-        async getContent({ path }) {
-            const {
-                req: { url },
-                env: { [props.name]: assets },
-            } = props.context
-            const file = URL.parse(url)
-            file.pathname = path
-            return assets.fetch(file).then((res) => res.json())
-        },
-        findOne({ query = [], sort = [] }) {
-            return getCursor(query).at(0)
-        },
-        find({ query = [], sort = [], page = 1, limit = 10 }) {
-            const cursor = getCursor(query)
-            const total = cursor.length
-            const { start, end, ...pages } = getPages(total, page, limit)
-            const list = cursor.sort(getSort(sort)).slice(start, end)
-            const count = list.length
-            return {
-                total,
-                count,
-                pages,
-                list,
-            }
-        },
-    }
-})()
+const api = new Api()
 
 /**
  * @namespace EJS
  */
-helpers({ api })
+helpers({
+    api,
+})
 /**
  *
  * @param path
@@ -188,9 +200,9 @@ helpers({ api })
  * @return {(function(*, *): Promise<void>)|*}
  */
 export const setApi = ({ path, data = [] }) => {
-    api.setProps({ data, path })
+    api.props({ data, path })
     return async (context, next) => {
-        api.setProps({ context })
+        api.props({ context })
         context.api = api
         await next()
     }

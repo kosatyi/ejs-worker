@@ -3,22 +3,13 @@ import { parse } from 'node:path'
 import { Marked } from 'marked'
 import fm from 'front-matter'
 import yaml from 'yaml'
+import globWatcher from 'glob-watcher'
 
 /**
- * @typedef {function} FileContentBuffer
- * @param {string} path
- * @return {Promise<Buffer<ArrayBufferLike>>}
- */
-
-/**
- * @typedef {function} FileContentString
+ *
  * @param path
- * @param {true} stringify
- * @return {Promise<string>}
- */
-
-/**
- * @type {FileContentString | FileContentBuffer}
+ * @param stringify
+ * @returns {Promise<string | Buffer<ArrayBufferLike> | string>}
  */
 export const fileContent = (path, stringify = true) => {
     return readFile(path)
@@ -53,6 +44,41 @@ const marked = new Marked({
             return { params: this.params, content: html }
         },
     },
+})
+
+function contrast(hexcolor) {
+    // If a leading # is provided, remove it
+    if (hexcolor.slice(0, 1) === '#') {
+        hexcolor = hexcolor.slice(1)
+    }
+    // Convert to RGB value
+    const r = parseInt(hexcolor.slice(0, 2), 16)
+    const g = parseInt(hexcolor.slice(2, 4), 16)
+    const b = parseInt(hexcolor.slice(4, 6), 16)
+    // Get YIQ ratio
+    const yiq = (r * 299 + g * 587 + b * 114) / 1000
+    // Check contrast
+    return yiq >= 128 ? '#000000' : '#ffffff'
+}
+
+marked.use({
+    extensions: [
+        {
+            name: 'codespan',
+            level: 'inline',
+            tokenizer(str) {
+                const match = str.match(/^`(#[0-9A-F]{6})`/)
+                if (match) {
+                    const [raw, text] = match
+                    return { type: 'codespan', raw, text, color: text }
+                }
+                return false
+            },
+            renderer({ text, color }) {
+                return `<mark style="--t:${contrast(color)};--c:${color};"><code>${text}</code></mark>`
+            },
+        },
+    ],
 })
 
 const getFileData = async (filepath) => {
@@ -163,11 +189,20 @@ const watcherCallback = (id, callback, context) => {
         )
     })
 }
-export const fileWatcher = async (source, callback) => {
-    const changes = watch(source, { encoding: 'utf-8', recursive: true })
+export const fileWatcher = (category, source, callback) => {
+    const watcher = globWatcher(source)
     logger.output('🔍', 'watch directory:', source)
-    for await (const item of changes) {
-        if (item.filename.endsWith('~')) continue
-        await watcherCallback(item.filename, callback, item)
-    }
+    watcher.on('change', async (path) => {
+        logger.output('✅', 'file change:', path)
+        await callback(path)
+    })
+    watcher.on('add', async (path) => {
+        logger.output('+', 'file add:', path)
+        await callback(path)
+    })
+    watcher.on('unlink', async (path) => {
+        logger.output('×', 'file unlink:', path)
+        await callback(path)
+    })
+    return watcher
 }
