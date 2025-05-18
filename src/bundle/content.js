@@ -107,6 +107,7 @@ export class EjsContent {
         }
         sourceWatcher.on('change', sourceChange)
         sourceWatcher.on('add', sourceChange)
+        sourceWatcher.on('add', sourceChange)
     }
 
     async pipeline() {
@@ -174,9 +175,17 @@ export class EjsContent {
         for (const filename of files) {
             let filepath = resolve(source, filename)
             let params = this.params(regexp, filename)
-            if (params === null) continue
+            if (params === null) {
+                this.site.delete(filepath)
+                collection.delete(filepath)
+                continue
+            }
             let { data, content, buffer } = await this.content(filepath)
-            if (data === null) continue
+            if (data === null) {
+                this.site.delete(filepath)
+                collection.delete(filepath)
+                continue
+            }
             dataCallback(Object.assign(data, params))
             let path = this.format(output, data)
             content = contentCallback(content)
@@ -184,7 +193,7 @@ export class EjsContent {
             if (index) {
                 this.site.set(filepath, entry)
             }
-            collection.set(filename, entry)
+            collection.set(filepath, entry)
             if (buffer) {
                 await fileSave(join(target, path), content)
             } else {
