@@ -1,6 +1,7 @@
 import { mkdir, readFile, stat, watch, writeFile } from 'node:fs/promises'
 import { parse } from 'node:path'
-import { Marked } from 'marked'
+import { Marked, Renderer } from 'marked'
+
 import fm from 'front-matter'
 import yaml from 'yaml'
 import globWatcher from 'glob-watcher'
@@ -29,8 +30,14 @@ export const jsonFileSave = async (filePath, fileData, replacer, space) => {
     return filePath
 }
 
+const renderer = new Renderer()
 const marked = new Marked({
     async: true,
+    renderer: {
+        table(...args) {
+            return `<figure class="embed table">${renderer.table.apply(this, args)}</figure>`
+        },
+    },
     hooks: {
         processAllTokens(tokens) {
             return tokens
@@ -47,17 +54,13 @@ const marked = new Marked({
 })
 
 function contrast(hexcolor) {
-    // If a leading # is provided, remove it
     if (hexcolor.slice(0, 1) === '#') {
         hexcolor = hexcolor.slice(1)
     }
-    // Convert to RGB value
     const r = parseInt(hexcolor.slice(0, 2), 16)
     const g = parseInt(hexcolor.slice(2, 4), 16)
     const b = parseInt(hexcolor.slice(4, 6), 16)
-    // Get YIQ ratio
     const yiq = (r * 299 + g * 587 + b * 114) / 1000
-    // Check contrast
     return yiq >= 128 ? '#000000' : '#ffffff'
 }
 
