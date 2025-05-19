@@ -1,7 +1,6 @@
 import { Marked, Renderer } from 'marked'
 import { createDirectives } from 'marked-directive'
-
-export fm from 'front-matter'
+import fm from 'front-matter'
 
 const contrast = (color) => {
     if (color.slice(0, 1) === '#') {

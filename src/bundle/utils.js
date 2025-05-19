@@ -2,7 +2,8 @@ import { mkdir, readFile, stat, writeFile } from 'node:fs/promises'
 import { parse } from 'node:path'
 import yaml from 'yaml'
 import globWatcher from 'glob-watcher'
-import { marked, fm } from '../worker/marked.js'
+import fm from 'front-matter'
+import { marked } from '../worker/marked.js'
 /**
  *
  * @param path
