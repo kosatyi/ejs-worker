@@ -43,7 +43,8 @@ export const trimContent = (content) => {
 export const parseMarkdown = async (filepath) => {
     const data = await getFileData(filepath)
     const file = await fileContent(filepath)
-    const { params, content } = await marked.parse(file)
+    const { attributes: params, body } = fm(file)
+    const content = await marked.parse(body)
     Object.assign(data, params)
     return { data, content }
 }

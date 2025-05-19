@@ -35,18 +35,18 @@ export const marked = new Marked({
         },
     },
     hooks: {
-        processAllTokens(tokens) {
-            console.log('processAllTokens', tokens)
-            return tokens
-        },
-        preprocess(markdown) {
-            const { attributes, body } = fm(markdown)
-            this.params = attributes
-            return body
-        },
-        postprocess(html) {
-            return { params: this.params, content: html }
-        },
+        // processAllTokens(tokens) {
+        //     console.log('processAllTokens', tokens)
+        //     return tokens
+        // },
+        // preprocess(markdown) {
+        //     const { attributes, body } = fm(markdown)
+        //     this.params = attributes
+        //     return body
+        // },
+        // postprocess(html) {
+        //     return { params: this.params, content: html }
+        // },
     },
 })
 
