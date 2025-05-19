@@ -25,9 +25,9 @@ export const marked = new Marked({
             return `<figure class="image">${renderer.image.call(this, image)}</figure>`
         },
         paragraph({ tokens }) {
-            // console.log('paragraph', paragraph)
             const images = tokens.every(({ type }) => type === 'image')
             const content = this.parser.parseInline(tokens)
+            console.log('paragraph', images)
             if (images) {
                 return `<div>${content}</div>\n`
             } else {
