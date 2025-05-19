@@ -1,5 +1,4 @@
 import { Marked, Renderer } from 'marked'
-import { createDirectives } from 'marked-directive'
 import fm from 'front-matter'
 
 const contrast = (color) => {
@@ -20,6 +19,9 @@ export const marked = new Marked({
     renderer: {
         table(...args) {
             return `<figure class="embed table">${renderer.table.apply(this, args)}</figure>`
+        },
+        image(...args) {
+            return `<figure class="image">${renderer.image.apply(this, args)}</figure>`
         },
     },
     hooks: {
