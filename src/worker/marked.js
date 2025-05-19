@@ -24,10 +24,15 @@ export const marked = new Marked({
             console.log('image', image)
             return `<figure class="image">${renderer.image.call(this, image)}</figure>`
         },
-        paragraph(paragraph) {
+        paragraph({ tokens }) {
             // console.log('paragraph', paragraph)
-            // paragraph.tokens.every(({ name }) => {})
-            return renderer.paragraph.call(this, paragraph)
+            const images = tokens.every(({ type }) => type === 'image')
+            const content = this.parser.parseInline(tokens)
+            if (images) {
+                return `<div>${content}</div>\n`
+            } else {
+                return `<p>${content}</p>\n`
+            }
         },
         codespan(codespan) {
             console.log('codespan', codespan)
