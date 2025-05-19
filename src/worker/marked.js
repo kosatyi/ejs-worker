@@ -29,6 +29,7 @@ export const marked = new Marked({
             const content = this.parser.parseInline(tokens)
             console.log('paragraph', images)
             if (images) {
+                console.log(tokens)
                 return `<div>${content}</div>\n`
             } else {
                 return `<p>${content}</p>\n`
