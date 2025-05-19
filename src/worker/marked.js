@@ -17,20 +17,21 @@ const renderer = new Renderer()
 export const marked = new Marked({
     async: true,
     renderer: {
-        table(...args) {
-            return `<figure class="embed table">${renderer.table.apply(this, args)}</figure>`
+        figure(figure) {},
+        table(table) {
+            return `<figure class="embed table">${renderer.table.call(this, table)}</figure>`
         },
-        image(...args) {
-            console.log('image', args)
-            return `<figure class="image">${renderer.image.apply(this, args)}</figure>`
+        image(image) {
+            console.log('image', image)
+            return `<figure class="image">${renderer.image.call(this, image)}</figure>`
         },
-        paragraph(...args) {
-            console.log('paragraph', args)
-            return renderer.paragraph.apply(this, args)
+        paragraph(paragraph) {
+            console.log('paragraph', paragraph)
+            return renderer.paragraph.call(this, paragraph)
         },
-        codespan(...args) {
-            console.log('codespan', args)
-            return renderer.codespan.apply(this, args)
+        codespan(codespan) {
+            console.log('codespan', codespan)
+            return renderer.codespan.call(this, codespan)
         },
     },
     hooks: {
