@@ -27,9 +27,11 @@ export const marked = new Marked({
         paragraph({ tokens }) {
             const images = tokens.some(({ type }) => type === 'image')
             const content = this.parser.parseInline(tokens)
-            console.log('paragraph', images)
-            if (images) {
+            //console.log('paragraph', images)
+            if (images && tokens.length > 1) {
                 console.log(tokens)
+            }
+            if (images) {
                 return `<div>${content}</div>\n`
             } else {
                 return `<p>${content}</p>\n`
