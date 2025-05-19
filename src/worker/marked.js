@@ -38,7 +38,7 @@ export const marked = new Marked({
                 if (count === 1) {
                     return `<figure class="image">\n${output}\n</figure>\n`
                 }
-                return `<figure class="image image-grid image-grid-${count}">\n${output}\n</figure>\n`
+                return `<figure class="image grid grid-${count}">\n${output}\n</figure>\n`
             } else {
                 return `<p>${this.parser.parseInline(tokens)}</p>\n`
             }
