@@ -28,6 +28,10 @@ export const marked = new Marked({
             console.log('paragraph', args)
             return renderer.paragraph.apply(this, args)
         },
+        codespan(...args) {
+            console.log('paragraph', args)
+            return renderer.codespan.apply(this, args)
+        },
     },
     hooks: {
         processAllTokens(tokens) {
