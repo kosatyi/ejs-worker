@@ -17,7 +17,6 @@ const renderer = new Renderer()
 export const marked = new Marked({
     async: true,
     renderer: {
-        figure(figure) {},
         table(table) {
             return `<figure class="embed table">${renderer.table.call(this, table)}</figure>`
         },
