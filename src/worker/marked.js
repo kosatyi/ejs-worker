@@ -25,9 +25,10 @@ export const marked = new Marked({
             return `<figure class="image">${renderer.image.call(this, image)}</figure>`
         },
         paragraph({ tokens }) {
-            const images = tokens.some(({ type }) => type === 'image')
+            const images = tokens.every(
+                ({ type, text }) => type === 'image' || text === '\n',
+            )
             const content = this.parser.parseInline(tokens)
-            //console.log('paragraph', images)
             if (images && tokens.length > 1) {
                 console.log(tokens)
             }
