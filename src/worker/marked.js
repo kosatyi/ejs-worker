@@ -29,12 +29,13 @@ export const marked = new Marked({
             return renderer.paragraph.apply(this, args)
         },
         codespan(...args) {
-            console.log('paragraph', args)
+            console.log('codespan', args)
             return renderer.codespan.apply(this, args)
         },
     },
     hooks: {
         processAllTokens(tokens) {
+            console.log('processAllTokens', tokens)
             return tokens
         },
         preprocess(markdown) {
