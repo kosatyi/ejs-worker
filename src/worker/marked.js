@@ -21,11 +21,11 @@ export const marked = new Marked({
             return `<figure class="embed table">${renderer.table.call(this, table)}</figure>`
         },
         image(image) {
-            console.log('image', image)
+            //console.log('image', image)
             return `<figure class="image">${renderer.image.call(this, image)}</figure>`
         },
         paragraph(paragraph) {
-            console.log('paragraph', paragraph)
+            //console.log('paragraph', paragraph)
             return renderer.paragraph.call(this, paragraph)
         },
         codespan(codespan) {
