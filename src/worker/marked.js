@@ -21,8 +21,12 @@ export const marked = new Marked({
             return `<figure class="embed table">${renderer.table.apply(this, args)}</figure>`
         },
         image(...args) {
-            console.log(args)
+            console.log('image', args)
             return `<figure class="image">${renderer.image.apply(this, args)}</figure>`
+        },
+        paragraph(...args) {
+            console.log('paragraph', args)
+            return renderer.paragraph.apply(this, args)
         },
     },
     hooks: {
