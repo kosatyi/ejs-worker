@@ -39,8 +39,6 @@ export const marked = new Marked({
     },
 })
 
-marked.use(createDirectives())
-
 marked.use({
     extensions: [
         {
