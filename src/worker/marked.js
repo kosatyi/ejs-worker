@@ -1,5 +1,4 @@
 import { Marked, Renderer } from 'marked'
-import fm from 'front-matter'
 
 const contrast = (color) => {
     if (color.slice(0, 1) === '#') {
@@ -12,7 +11,17 @@ const contrast = (color) => {
     return yiq >= 128 ? '#000000' : '#ffffff'
 }
 
-const renderer = new Renderer()
+const renderer = new Renderer({
+    renderer: {
+        figure(image) {
+            const output = [renderer.image(image)]
+            if (image.title) {
+                output.push(`<figcaption>${image.title}</figcaption>`)
+            }
+            return `<figure class="image">${output.join('')}</figure>`
+        },
+    },
+})
 
 export const marked = new Marked({
     async: true,
@@ -20,69 +29,23 @@ export const marked = new Marked({
         table(table) {
             return `<figure class="embed table">${renderer.table.call(this, table)}</figure>`
         },
-        image(image) {
-            //console.log('image', image)
-            return `<figure class="image">${renderer.image.call(this, image)}</figure>`
-        },
         paragraph({ tokens }) {
-            const images = tokens.every(
-                ({ type, text }) => type === 'image' || text === '\n',
-            )
-            const content = this.parser.parseInline(tokens)
-            if (images && tokens.length > 1) {
-                console.log(tokens)
-            }
-            if (images) {
-                return `<div>${content}</div>\n`
+            const content = tokens.filter(({ raw }) => raw !== '\n')
+            const images = content.filter(({ type }) => type === 'image')
+            if (content.length === images.length) {
+                const output = images.map(this.image.bind(this)).join('\n')
+                return `<figure class="image" data-grid="${images.length}">\n${output}\n</figure>\n`
             } else {
-                return `<p>${content}</p>\n`
+                return `<p>${this.parser.parseInline(tokens)}</p>\n`
             }
         },
         codespan(codespan) {
-            // /console.log('codespan', codespan)
+            const match = codespan.text.match(/^(#[0-9A-F]{6})$/i)
+            if (match) {
+                const color = match.at(1)
+                return `<span class="hex" style="--t:${contrast(color)};--c:${color};">${color}</span>`
+            }
             return renderer.codespan.call(this, codespan)
         },
     },
-    hooks: {
-        // processAllTokens(tokens) {
-        //     console.log('processAllTokens', tokens)
-        //     return tokens
-        // },
-        // preprocess(markdown) {
-        //     const { attributes, body } = fm(markdown)
-        //     this.params = attributes
-        //     return body
-        // },
-        // postprocess(html) {
-        //     return { params: this.params, content: html }
-        // },
-    },
-})
-
-marked.use({
-    extensions: [
-        {
-            name: 'codespan',
-            level: 'inline',
-            tokenizer(str) {
-                const hex = str.match(/^`(#[0-9A-F]{6})`/i)
-                if (hex) {
-                    const [raw, text] = hex
-                    return {
-                        type: 'codespan',
-                        raw,
-                        text,
-                        hex: text.toUpperCase(),
-                    }
-                }
-                return false
-            },
-            renderer({ text, hex }) {
-                if (hex) {
-                    return `<mark style="--t:${contrast(hex)};--c:${hex};"><code>${text}</code></mark>`
-                }
-                return `<span><code>${text}</code></span>`
-            },
-        },
-    ],
 })
