@@ -44,6 +44,7 @@ export class EjsContent {
         source,
         target,
         index,
+        nameIndex,
         dataCallback,
         contentCallback,
     }) {
@@ -60,6 +61,7 @@ export class EjsContent {
             source,
             target,
             index,
+            nameIndex,
             dataCallback,
             contentCallback,
         })
@@ -165,9 +167,10 @@ export class EjsContent {
             output,
             source,
             target,
+            index = true,
+            nameIndex = true,
             dataCallback,
             contentCallback,
-            index = true,
         },
     ) {
         const collection = this.data.get(name) || new Map()
@@ -190,8 +193,8 @@ export class EjsContent {
             const entry = { name, path, data, content }
             if (index) {
                 this.site.set(filepath, entry)
-                collection.set(filepath, entry)
             }
+            collection.set(filepath, entry)
             if (buffer) {
                 await fileSave(join(target, path), content)
             } else {
@@ -199,7 +202,7 @@ export class EjsContent {
             }
             logger.progress('save file:', path)
         }
-        if (index) {
+        if (nameIndex) {
             await this.saveData(name, Array.from(collection.values()))
         }
         logger.progress(null)
