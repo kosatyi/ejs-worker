@@ -168,7 +168,7 @@ export class EjsContent {
             source,
             target,
             index = true,
-            nameIndex = true,
+            nameIndex = false,
             dataCallback,
             contentCallback,
         },
