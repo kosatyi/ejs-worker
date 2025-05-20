@@ -194,7 +194,9 @@ export class EjsContent {
             if (index) {
                 this.site.set(filepath, entry)
             }
-            collection.set(filepath, entry)
+            if (nameIndex) {
+                collection.set(filepath, entry)
+            }
             if (buffer) {
                 await fileSave(join(target, path), content)
             } else {
