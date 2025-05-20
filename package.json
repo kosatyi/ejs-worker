@@ -23,7 +23,9 @@
     "front-matter": "^4.0.2",
     "glob": "^11.0.1",
     "glob-watcher": "^6.0.0",
+    "highlight.js": "^11.11.1",
     "marked": "^15.0.7",
+    "marked-highlight": "^2.2.1",
     "process.argv": "^1.0.0",
     "rollup-plugin-copy": "^3.5.0",
     "yaml": "^2.7.1"
