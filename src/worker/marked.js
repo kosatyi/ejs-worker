@@ -11,17 +11,7 @@ const contrast = (color) => {
     return yiq >= 128 ? '#000000' : '#ffffff'
 }
 
-const renderer = new Renderer({
-    renderer: {
-        figure(image) {
-            const output = [renderer.image(image)]
-            if (image.title) {
-                output.push(`<figcaption>${image.title}</figcaption>`)
-            }
-            return `<figure class="image">${output.join('')}</figure>`
-        },
-    },
-})
+const renderer = new Renderer({})
 
 export const marked = new Marked({
     async: true,
@@ -29,16 +19,21 @@ export const marked = new Marked({
         table(table) {
             return `<figure class="embed table">${renderer.table.call(this, table)}</figure>`
         },
+        image(image) {
+            const output = [renderer.image.call(this, image)]
+            if (image.title) {
+                output.push(`<figcaption>${image.title}</figcaption>`)
+            }
+            return `<figure class="image">${output.join('')}</figure>\n`
+        },
         paragraph({ tokens }) {
             const content = tokens.filter(({ raw }) => raw !== '\n')
             const images = content.filter(({ type }) => type === 'image')
             if (content.length === images.length) {
-                const output = images.map(this.image.bind(this)).join('\n')
                 const count = images.length
-                if (count === 1) {
-                    return `<figure class="image">\n${output}\n</figure>\n`
-                }
-                return `<figure class="image grid grid-${count}">\n${output}\n</figure>\n`
+                const output = images.map(this.image.bind(this)).join('\n')
+                if (count === 1) return `${output}\n`
+                return `<p class="grid grid-${count}">\n${output}\n</p>\n`
             } else {
                 return `<p>${this.parser.parseInline(tokens)}</p>\n`
             }
