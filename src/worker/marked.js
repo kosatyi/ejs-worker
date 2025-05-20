@@ -33,7 +33,7 @@ export const marked = new Marked({
                 const count = images.length
                 const output = images.map(this.image.bind(this)).join('\n')
                 if (count === 1) return `${output}\n`
-                return `<p class="grid grid-${count}">\n${output}\n</p>\n`
+                return `<div class="grid grid-${count}">\n${output}\n</div>\n`
             } else {
                 return `<p>${this.parser.parseInline(tokens)}</p>\n`
             }

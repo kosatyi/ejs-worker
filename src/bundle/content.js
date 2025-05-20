@@ -190,8 +190,8 @@ export class EjsContent {
             const entry = { name, path, data, content }
             if (index) {
                 this.site.set(filepath, entry)
+                collection.set(filepath, entry)
             }
-            collection.set(filepath, entry)
             if (buffer) {
                 await fileSave(join(target, path), content)
             } else {
@@ -199,7 +199,9 @@ export class EjsContent {
             }
             logger.progress('save file:', path)
         }
-        await this.saveData(name, Array.from(collection.values()))
+        if (index) {
+            await this.saveData(name, Array.from(collection.values()))
+        }
         logger.progress(null)
     }
 }
