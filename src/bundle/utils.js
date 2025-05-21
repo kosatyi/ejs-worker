@@ -126,15 +126,15 @@ export const fileWatcher = (category, source, callback) => {
     logger.output('🔍', 'watch directory:', source)
     watcher.on('change', async (path) => {
         logger.output('✅', category, 'file change:', path)
-        await callback(path)
+        await callback(path, 'change')
     })
     watcher.on('add', async (path) => {
         logger.output('+', category, 'file add:', path)
-        await callback(path)
+        await callback(path, 'add')
     })
     watcher.on('unlink', async (path) => {
         logger.output('×', category, 'file remove:', path)
-        await callback(path)
+        await callback(path, 'unlink')
     })
     return watcher
 }
