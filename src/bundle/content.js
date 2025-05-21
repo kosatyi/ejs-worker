@@ -9,6 +9,7 @@ import {
     parseYaml,
     parseBuffer,
     arrayAsync,
+    fileWatcher,
 } from './utils.js'
 import globWatcher from 'glob-watcher'
 
@@ -98,18 +99,26 @@ export class EjsContent {
     }
 
     async watch() {
-        const sourceWatcher = globWatcher(this.options.source)
-        const sourceChange = async (path) => {
+        fileWatcher('content', this.options.source, async (path) => {
             path = relative(this.options.source, path)
             const config = this.config(path)
             if (config) {
                 await this.parse([path], config)
                 await this.saveIndex()
             }
-        }
-        sourceWatcher.on('change', sourceChange)
-        sourceWatcher.on('add', sourceChange)
-        sourceWatcher.on('add', sourceChange)
+        })
+        // const sourceWatcher = globWatcher(this.options.source)
+        // const sourceChange = async (path) => {
+        //     path = relative(this.options.source, path)
+        //     const config = this.config(path)
+        //     if (config) {
+        //         await this.parse([path], config)
+        //         await this.saveIndex()
+        //     }
+        // }
+        // sourceWatcher.on('change', sourceChange)
+        // sourceWatcher.on('add', sourceChange)
+        // sourceWatcher.on('unlink', sourceChange)
     }
 
     async pipeline() {
