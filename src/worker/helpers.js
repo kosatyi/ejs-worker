@@ -18,7 +18,9 @@ helpers({
         const url = URL.parse(this.get('origin'))
         url.pathname = splitPath(path).join('/')
         Object.entries(query || {}).forEach(([key, value]) => {
-            url.searchParams.set(key, String(value))
+            if (value !== undefined) {
+                url.searchParams.set(key, String(value))
+            }
         })
         return url.toString()
     },
