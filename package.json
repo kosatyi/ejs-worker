@@ -19,7 +19,6 @@
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
-    "@kosatyi/ejs": "> 0.0.90 < 2.0.0",
     "front-matter": "^4.0.2",
     "glob": "^11.0.1",
     "glob-watcher": "^6.0.0",
