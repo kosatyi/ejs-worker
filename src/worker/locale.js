@@ -54,9 +54,10 @@ i18n.init = (list = []) => {
     })
 }
 
-i18n.use = () => {
-    return async (context, next) => {
-        context.i18n = i18n
+i18n.use = (list) => {
+    i18n.init(list)
+    return async (c, next) => {
+        c.i18n = i18n
         await next()
     }
 }
