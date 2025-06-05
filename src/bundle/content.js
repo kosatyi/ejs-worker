@@ -190,19 +190,20 @@ export class EjsContent {
             }
             dataCallback(Object.assign(data, params))
             let path = this.format(output, data)
+            let indexData = index || nameIndex ? indexCallback(data) : {}
             content = contentCallback(content)
             if (index) {
                 this.site.set(filepath, {
                     name,
                     path,
-                    data: indexCallback(data),
+                    data: indexData,
                 })
             }
             if (nameIndex) {
                 collection.set(filepath, {
                     name,
                     path,
-                    data: indexCallback(data),
+                    data: indexData,
                 })
             }
             if (buffer) {
