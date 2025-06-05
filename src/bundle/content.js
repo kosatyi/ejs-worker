@@ -38,37 +38,6 @@ export class EjsContent {
         }
     }
 
-    add({
-        name,
-        regexp,
-        output,
-        source,
-        target,
-        index,
-        nameIndex,
-        dataCallback,
-        contentCallback,
-    }) {
-        if (!name || !regexp || !output) throw new Error('parameters mismatch')
-        target = target || this.options.target
-        source = source || this.options.source
-        regexp = new RegExp(regexp, 'iu')
-        dataCallback = dataCallback || (($data) => $data)
-        contentCallback = contentCallback || (($content) => $content)
-        this.pipe.add({
-            name,
-            regexp,
-            output,
-            source,
-            target,
-            index,
-            nameIndex,
-            dataCallback,
-            contentCallback,
-        })
-        return this
-    }
-
     config(filename) {
         return Array.from(this.pipe).find(({ regexp }) => regexp.test(filename))
     }
@@ -134,7 +103,7 @@ export class EjsContent {
         const { target } = this.options
         await jsonFileSave(
             [target, 'api', [name, 'json'].join('.')].join('/'),
-            list.map(({ name, path, data }) => ({ name, path, data })),
+            list,
         )
     }
 
@@ -156,6 +125,40 @@ export class EjsContent {
         return parseBuffer(file)
     }
 
+    add({
+        name,
+        regexp,
+        output,
+        source,
+        target,
+        index,
+        nameIndex,
+        dataCallback,
+        indexCallback,
+        contentCallback,
+    }) {
+        if (!name || !regexp || !output) throw new Error('parameters mismatch')
+        target = target || this.options.target
+        source = source || this.options.source
+        regexp = new RegExp(regexp, 'iu')
+        dataCallback = dataCallback || (($data) => $data)
+        indexCallback = indexCallback || (($data) => $data)
+        contentCallback = contentCallback || (($content) => $content)
+        this.pipe.add({
+            name,
+            regexp,
+            output,
+            source,
+            target,
+            index,
+            nameIndex,
+            dataCallback,
+            indexCallback,
+            contentCallback,
+        })
+        return this
+    }
+
     async parse(
         files,
         {
@@ -167,6 +170,7 @@ export class EjsContent {
             index = true,
             nameIndex = false,
             dataCallback,
+            indexCallback,
             contentCallback,
         },
     ) {
@@ -187,17 +191,29 @@ export class EjsContent {
             dataCallback(Object.assign(data, params))
             let path = this.format(output, data)
             content = contentCallback(content)
-            const entry = { name, path, data, content }
             if (index) {
-                this.site.set(filepath, entry)
+                this.site.set(filepath, {
+                    name,
+                    path,
+                    data: indexCallback(data),
+                })
             }
             if (nameIndex) {
-                collection.set(filepath, entry)
+                collection.set(filepath, {
+                    name,
+                    path,
+                    data: indexCallback(data),
+                })
             }
             if (buffer) {
                 await fileSave(join(target, path), content)
             } else {
-                await jsonFileSave(join(target, path), entry)
+                await jsonFileSave(join(target, path), {
+                    name,
+                    path,
+                    data,
+                    content,
+                })
             }
             logger.progress('save file:', path)
         }
