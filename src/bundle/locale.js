@@ -80,11 +80,12 @@ export class EjsLocale {
     async watch() {
         const { source, types, target } = this.options
         const sourceMatch = this.globMatch(source, types)
+        const targetMatch = this.globMatch(target, ['yml'])
         fileWatcher('i18n', sourceMatch, async (path) => {
             await this.process(path)
             await this.save()
         })
-        fileWatcher('i18n', target, async () => {
+        fileWatcher('i18n', targetMatch, async () => {
             await this.setup()
         })
     }
