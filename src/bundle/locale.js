@@ -8,7 +8,6 @@ import {
     fileSave,
     logger,
 } from './utils.js'
-import globWatcher from 'glob-watcher'
 
 export class EjsLocale {
     constructor(options = {}) {
@@ -25,6 +24,7 @@ export class EjsLocale {
             options,
         )
     }
+
     sort(data) {
         return Object.keys(data)
             .sort()
@@ -33,18 +33,21 @@ export class EjsLocale {
                 return obj
             }, {})
     }
+
     reduce(callback) {
         Object.entries(this.data).reduce((data, [lang, value]) => {
             data[lang] = callback(lang, value, data)
             return data
         }, this.data)
     }
+
     define(prop) {
         this.reduce((lang, value) => {
             value[prop] = value[prop] || ''
             return value
         })
     }
+
     async setup() {
         const { target, output } = this.options
         for (const lang of output) {
@@ -55,13 +58,17 @@ export class EjsLocale {
             Object.assign(this.data[lang], data || {})
         }
     }
-    async build() {
-        const { source, types, exclude } = this.options
-        if (typeof source !== 'string') return
-        const ignore = ['node_modules/**'].concat(exclude)
+
+    globMatch(source, types) {
         const pattern = Array.isArray(source) ? source : [source]
         const wildcard = `**/*.{${types.join(',')}}`
-        const match = pattern.map((item) => [item, wildcard].join('/'))
+        return pattern.map((item) => [item, wildcard].join('/'))
+    }
+    async build() {
+        const { source, types, exclude } = this.options
+        if (source === null) return
+        const ignore = ['node_modules/**'].concat(exclude)
+        const match = this.globMatch(source, types)
         const files = await glob(match, { ignore })
         const list = Array.from(files)
         for (const filename of list) {
@@ -69,9 +76,11 @@ export class EjsLocale {
         }
         await this.save()
     }
+
     async watch() {
-        const { source, target } = this.options
-        fileWatcher('i18n', source, async (path) => {
+        const { source, types, target } = this.options
+        const sourceMatch = this.globMatch(source, types)
+        fileWatcher('i18n', sourceMatch, async (path) => {
             await this.process(path)
             await this.save()
         })
@@ -79,6 +88,7 @@ export class EjsLocale {
             await this.setup()
         })
     }
+
     async process(file) {
         const { names } = this.options
         const regexp = new RegExp(
@@ -91,6 +101,7 @@ export class EjsLocale {
             this.define(item.at(2))
         }
     }
+
     async save() {
         const { target } = this.options
         await arrayAsync(Object.entries(this.data), ([lang, data]) => {

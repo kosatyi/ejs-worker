@@ -121,8 +121,8 @@ export const arrayAsync = (arrayLike, callback) => {
     return Promise.all(Array.from(arrayLike).map(callback))
 }
 
-export const fileWatcher = (category, source, callback) => {
-    const watcher = globWatcher(source)
+export const fileWatcher = (category, source, callback, options = {}) => {
+    const watcher = globWatcher(source, options)
     logger.output('🔍', 'watch directory:', source)
     watcher.on('change', async (path) => {
         logger.output('✅', category, 'file change:', path)
