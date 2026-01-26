@@ -53,7 +53,7 @@ await Promise.all(
             },
             config,
         )
-        const bundler = new Bundler(
+        const bundler = Bundler(
             {
                 target: ejsConfig.target,
                 minify: ejsConfig.minify,
