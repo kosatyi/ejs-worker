@@ -5,7 +5,7 @@ import path from 'path'
 
 import { access, constants } from 'node:fs/promises'
 
-import { Bundler } from '@kosatyi/ejs/bundler'
+import { bundler } from '@kosatyi/ejs/bundler'
 
 import { EjsLocale, EjsContent } from '../bundle.js'
 
@@ -53,7 +53,7 @@ await Promise.all(
             },
             config,
         )
-        const bundler = Bundler(
+        const bundle = bundler(
             {
                 target: ejsConfig.target,
                 minify: ejsConfig.minify,
@@ -66,9 +66,9 @@ await Promise.all(
                 extension: ejsConfig.extension,
             },
         )
-        await bundler.build()
+        await bundle.build()
         if (params.watch) {
-            watchers.push(bundler.watch())
+            watchers.push(bundle.watch())
         }
     }),
 )

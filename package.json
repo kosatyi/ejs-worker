@@ -1,36 +1,36 @@
 {
-  "name": "@kosatyi/ejs-worker",
-  "version": "1.0.0",
-  "description": "",
-  "type": "module",
-  "main": "worker.js",
-  "module": "worker.js",
-  "bin": {
-    "ejs-worker": "bin/worker.js"
-  },
-  "files": [
-    "worker.js",
-    "bundle.js",
-    "bin",
-    "src"
-  ],
-  "scripts": {
-    "prepublishOnly": "npm i",
-    "postversion": "git push && git push --tags"
-  },
-  "dependencies": {
-    "front-matter": "^4.0.2",
-    "glob": "^11.0.1",
-    "glob-watcher": "^6.0.0",
-    "highlight.js": "^11.11.1",
-    "marked": "^15.0.7",
-    "marked-highlight": "^2.2.1",
-    "process.argv": "^1.0.0",
-    "rollup-plugin-copy": "^3.5.0",
-    "yaml": "^2.7.1"
-  },
-  "peerDependencies": {
-    "@kosatyi/ejs": "> 0.0.90 < 2.0.0",
-    "ejs-component": "> 0.0.20 < 2.0.0"
-  }
+    "name": "@kosatyi/ejs-worker",
+    "version": "1.0.0",
+    "description": "",
+    "type": "module",
+    "main": "worker.js",
+    "module": "worker.js",
+    "bin": {
+        "ejs-worker": "bin/worker.js"
+    },
+    "files": [
+        "worker.js",
+        "bundle.js",
+        "bin",
+        "src"
+    ],
+    "scripts": {
+        "prepublishOnly": "npm i",
+        "postversion": "git push && git push --tags"
+    },
+    "dependencies": {
+        "front-matter": "^4.0.2",
+        "glob": "^11.0.1",
+        "glob-watcher": "^6.0.0",
+        "highlight.js": "^11.11.1",
+        "marked": "^15.0.7",
+        "marked-highlight": "^2.2.1",
+        "process.argv": "^1.0.0",
+        "rollup-plugin-copy": "^3.5.0",
+        "yaml": "^2.7.1"
+    },
+    "peerDependencies": {
+        "@kosatyi/ejs": "0.0.*",
+        "ejs-component": "> 0.0.20 < 2.0.0"
+    }
 }
