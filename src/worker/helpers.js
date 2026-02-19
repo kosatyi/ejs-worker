@@ -4,7 +4,7 @@ import { i18n } from './locale.js'
 import { splitPath } from './utils.js'
 
 /**
- * @namespace EJS
+ * @namespace EjsContext
  */
 helpers({
     truncate(prop, length) {
