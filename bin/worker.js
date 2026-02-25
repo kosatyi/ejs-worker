@@ -3,7 +3,7 @@
 import argv from 'process.argv'
 import path from 'path'
 
-import { access, constants } from 'node:fs/promises'
+import { access } from 'node:fs/promises'
 
 import { bundler } from '@kosatyi/ejs/bundler'
 
