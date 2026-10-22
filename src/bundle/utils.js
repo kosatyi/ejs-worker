@@ -1,16 +1,13 @@
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, stat, writeFile, watch } from 'node:fs/promises'
+import { glob } from 'node:fs'
 import { parse } from 'node:path'
-import yaml from 'yaml'
+import * as yaml from 'yaml'
 import globWatcher from 'glob-watcher'
 import fm from 'front-matter'
+
 import { marked } from '../worker/marked.js'
-/**
- *
- * @param path
- * @param stringify
- * @returns {Promise<string | Buffer<ArrayBufferLike> | string>}
- */
-export const fileContent = (path, stringify = true) => {
+
+export const fileContent = async (path, stringify = true) => {
     return readFile(path)
         .then((buffer) => (stringify ? buffer.toString() : buffer))
         .catch(() => '')

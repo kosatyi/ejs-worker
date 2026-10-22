@@ -1,6 +1,6 @@
 import { resolve } from 'node:path'
-import { glob, Glob } from 'glob'
-import yaml from 'yaml'
+import { glob } from 'glob'
+import * as yaml from 'yaml'
 import {
     arrayAsync,
     fileContent,
