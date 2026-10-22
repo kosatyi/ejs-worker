@@ -11,7 +11,6 @@ import {
     arrayAsync,
     fileWatcher,
 } from './utils.js'
-import globWatcher from 'glob-watcher'
 
 export class EjsContent {
     constructor(options = {}) {
