@@ -1,5 +1,4 @@
 import { mkdir, readFile, stat, writeFile, watch } from 'node:fs/promises'
-import { glob } from 'node:fs'
 import { parse } from 'node:path'
 import * as yaml from 'yaml'
 import globWatcher from 'glob-watcher'
