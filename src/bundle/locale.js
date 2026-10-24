@@ -2,113 +2,112 @@ import { resolve } from 'node:path'
 import { glob } from 'glob'
 import * as yaml from 'yaml'
 import {
-    arrayAsync,
-    fileContent,
-    fileWatcher,
-    fileSave,
-    logger,
+  arrayAsync,
+  fileContent,
+  fileWatcher,
+  fileSave,
+  logger,
 } from './utils.js'
 
 export class EjsLocale {
-    constructor(options = {}) {
-        this.data = {}
-        this.options = Object.assign(
-            {
-                source: null,
-                output: ['en', 'uk'],
-                target: 'i18n',
-                names: ['_', 'i18n'],
-                types: ['ejs', 'js'],
-                exclude: [],
-            },
-            options,
-        )
-    }
+  constructor(options = {}) {
+    this.data = {}
+    this.options = Object.assign(
+      {
+        source: null,
+        output: ['en', 'uk'],
+        target: 'i18n',
+        names: ['_', 'i18n'],
+        types: ['ejs', 'js'],
+        exclude: [],
+      },
+      options,
+    )
+  }
 
-    sort(data) {
-        return Object.keys(data)
-            .sort()
-            .reduce((obj, key) => {
-                obj[key] = data[key]
-                return obj
-            }, {})
-    }
+  sort(data) {
+    return Object.keys(data)
+      .sort()
+      .reduce((obj, key) => {
+        obj[key] = data[key]
+        return obj
+      }, {})
+  }
 
-    reduce(callback) {
-        Object.entries(this.data).reduce((data, [lang, value]) => {
-            data[lang] = callback(lang, value, data)
-            return data
-        }, this.data)
-    }
+  reduce(callback) {
+    Object.entries(this.data).reduce((data, [lang, value]) => {
+      data[lang] = callback(lang, value, data)
+      return data
+    }, this.data)
+  }
 
-    define(prop) {
-        this.reduce((lang, value) => {
-            value[prop] = value[prop] || ''
-            return value
-        })
-    }
+  define(prop) {
+    this.reduce((lang, value) => {
+      value[prop] = value[prop] || ''
+      return value
+    })
+  }
 
-    async setup() {
-        const { target, output } = this.options
-        for (const lang of output) {
-            const path = resolve(target, [lang, 'yml'].join('.'))
-            const content = await fileContent(path, true)
-            const data = yaml.parse(content)
-            this.data[lang] = {}
-            Object.assign(this.data[lang], data || {})
-        }
+  async setup() {
+    const { target, output } = this.options
+    for (const lang of output) {
+      const path = resolve(target, [lang, 'yml'].join('.'))
+      const content = await fileContent(path, true)
+      const data = yaml.parse(content)
+      this.data[lang] = {}
+      Object.assign(this.data[lang], data || {})
     }
+  }
+  globMatch(source, types) {
+    const pattern = Array.isArray(source) ? source : [source]
+    const wildcard = `**/*.{${types.join(',')}}`
+    return pattern.map((item) => [item, wildcard].join('/'))
+  }
+  async build() {
+    const { source, types, exclude } = this.options
+    if (source === null) return
+    const ignore = ['node_modules/**'].concat(exclude)
+    const match = this.globMatch(source, types)
+    const files = await glob(match, { ignore })
+    const list = Array.from(files)
+    for (const filename of list) {
+      await this.process(filename)
+    }
+    await this.save()
+  }
 
-    globMatch(source, types) {
-        const pattern = Array.isArray(source) ? source : [source]
-        const wildcard = `**/*.{${types.join(',')}}`
-        return pattern.map((item) => [item, wildcard].join('/'))
-    }
-    async build() {
-        const { source, types, exclude } = this.options
-        if (source === null) return
-        const ignore = ['node_modules/**'].concat(exclude)
-        const match = this.globMatch(source, types)
-        const files = await glob(match, { ignore })
-        const list = Array.from(files)
-        for (const filename of list) {
-            await this.process(filename)
-        }
-        await this.save()
-    }
+  async watch() {
+    const { source, types, target } = this.options
+    const sourceMatch = this.globMatch(source, types)
+    const targetMatch = this.globMatch(target, ['yml'])
+    fileWatcher('i18n', sourceMatch, async (path) => {
+      await this.process(path)
+      await this.save()
+    })
+    fileWatcher('i18n', targetMatch, async () => {
+      await this.setup()
+    })
+  }
 
-    async watch() {
-        const { source, types, target } = this.options
-        const sourceMatch = this.globMatch(source, types)
-        const targetMatch = this.globMatch(target, ['yml'])
-        fileWatcher('i18n', sourceMatch, async (path) => {
-            await this.process(path)
-            await this.save()
-        })
-        fileWatcher('i18n', targetMatch, async () => {
-            await this.setup()
-        })
+  async process(file) {
+    const { names } = this.options
+    const regexp = new RegExp(
+      `(?:${names.join('|')})(?:\\(|\\s)(["'])(.+?)\\1`,
+      'g',
+    )
+    const content = await fileContent(file)
+    const matches = content.matchAll(regexp)
+    for (const item of matches) {
+      this.define(item.at(2))
     }
+  }
 
-    async process(file) {
-        const { names } = this.options
-        const regexp = new RegExp(
-            `(?:${names.join('|')})(?:\\(|\\s)(["'])(.+?)\\1`,
-            'g',
-        )
-        const content = await fileContent(file)
-        const matches = content.matchAll(regexp)
-        for (const item of matches) {
-            this.define(item.at(2))
-        }
-    }
-
-    async save() {
-        const { target } = this.options
-        await arrayAsync(Object.entries(this.data), ([lang, data]) => {
-            const file = resolve(target, [lang, 'yml'].join('.'))
-            logger.output('✅', 'save file:', file)
-            return fileSave(file, yaml.stringify(this.sort(data)))
-        })
-    }
+  async save() {
+    const { target } = this.options
+    await arrayAsync(Object.entries(this.data), ([lang, data]) => {
+      const file = resolve(target, [lang, 'yml'].join('.'))
+      logger.output('✅', 'save file:', file)
+      return fileSave(file, yaml.stringify(this.sort(data)))
+    })
+  }
 }

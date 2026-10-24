@@ -3,25 +3,25 @@ import { helpers } from '@kosatyi/ejs/worker'
 import { configureComponent, getComponent } from 'ejs-component'
 
 configureComponent({
-    tagNodeToString({ tag, attrs, content }) {
-        return element(tag, attrs, content)
-    },
+  tagNodeToString({ tag, attrs, content }) {
+    return element(tag, attrs, content)
+  },
 })
 
 /**
  * @namespace EJS
  */
 helpers({
-    /**
-     * @memberof global
-     * @param {string} name
-     * @param {{}} props
-     * @param {any} [content]
-     */
-    ui(name, props, content) {
-        const component = getComponent(name)
-        if (component) {
-            this.echo(component(props, content))
-        }
-    },
+  /**
+   * @memberof global
+   * @param {string} name
+   * @param {{}} props
+   * @param {any} [content]
+   */
+  ui(name, props, content) {
+    const component = getComponent(name)
+    if (component) {
+      this.echo(component(props, content))
+    }
+  },
 })
